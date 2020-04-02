@@ -1,0 +1,77 @@
+
+taxonomy:
+  - Entity:
+    - Person:
+      - Pronoun
+    - Organization
+    - Location
+  - Event:
+    # Triggers condensed into a lemma looking at the array of triggers.
+    - Positive:
+      - Like
+        - Love
+      - Proud
+    - Negative:
+      - Dislike
+        - Hate
+      - Angry
+      - Sad
+
+vars:
+  triggers: "/like|love|proud|dislike|hate|angry|sad|displeased|displeasure|disgust|hatr|sadden/" 
+
+rules:
+
+  - name: 'challenge-person'
+    label: Person
+    priority: 1
+    type: token
+    pattern: |
+      [entity="I-PER"]
+
+  - name: "challenge-pronoun"
+    label: Pronoun
+    priority: 1
+    type: token
+    pattern: |
+      [tag=PRP & !lemma=it]
+
+  - name: "challenge-org"
+    label: Organization
+    priority: 1
+    type: token
+    pattern: |
+      [entity="I-ORG"]
+
+  - name: "challenge-location"
+    label: Location
+    priority: 1
+    type: token
+    pattern: |
+      [entity="I-LOC"]
+  
+  - name: "challenge-capturerelation1"
+    label: Event
+    pritority: 2
+    pattern: |
+      trigger = [lemma=${triggers}]
+      experiencer:Entity = nsubj
+      stimulus:Entity = dobj
+
+    # An attempt to capture more complex relations, does not work
+  - name: "challenge-capturerelation2"
+    label: Event
+    pritority: 2
+    pattern: |
+      trigger = [lemma=${triggers}]
+      experiencer:Entity = nsubjpass
+      stimulus:Entity = nmod
+
+    # An attempt to capture more complex relations, does not work
+  - name: "challenge-capturerelation3"
+    label: Event
+    pritority: 2
+    pattern: |
+      trigger = [lemma=${triggers}]
+      experiencer:Entity = nmod:poss
+      stimulus:Entity = nmod_against
